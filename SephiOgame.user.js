@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        SephiOGame
 // @namespace   http://www.sephiogame.com
-// @version     3.9.0
+// @version     3.9.5
 // @description Script Ogame
 // @author      Sephizack,I2T,Chewbaka
 //
@@ -23,7 +23,7 @@ var _b, _c, _d, _e, _f, _g;
 try {
     var debug = false;
     var antiBugTimeout = setTimeout(function () { location.href = location.href; }, 5 * 60 * 1000);
-    var cur_version = '3.9.2';
+    var cur_version = '3.9.5';
     var univers = window.location.href.split('/')[2];
     var PersistedData = /** @class */ (function () {
         function PersistedData() {
@@ -38,7 +38,7 @@ try {
     var LANG_done = isFR ? "Terminé" : "Done";
     var LANG_noLocalStorage = isFR ? "Votre navigateur ne supporte pas le système de localStorage, mettez le à jour ou désinstallez le script."
         : "Your browser does not support localStorage feature, please update to latest Chrome version or unistall SephiOGame.";
-    var LANG_nouveaute_update = '- Added Discord link.';
+    var LANG_nouveaute_update = ' - Fix auto spy Galaxy slots<br/> - Fix auto spy fridge slots<br/> - Fix nb sondes send to spy';
     //get userid
     var userid = ($('head').find('meta[name="ogame-player-id"]') != null && $('head').find('meta[name="ogame-player-id"]').length > 0) ? $('head').find('meta[name="ogame-player-id"]').attr("content") : tabID;
     //get allianceid
@@ -631,7 +631,7 @@ try {
                         ////
                         //nb sonde config dans option
                         var nb_sonde_default = parseInt(readData("nb_sondes", "all"));
-                        (nb_sonde_default === 0 || nb_sonde_default === "undefined" || nb_sonde_default === "NaN") ? nb_sonde_default = 1 : null;
+                        (nb_sonde_default === 0 || nb_sonde_default === "undefined" || nb_sonde_default === "NaN") ? nb_sonde_default = 1 : nb_sonde_default;
                         var frigo_status = "", img_surcharge = "";
                         frigo_status = (flottesDetected == "undefined" || !(flottesDetected && flottesActive)) ? "" : " avec une flotte active";
                         frigo_status = frigo_status + ((frigo_status !== "") ? " et " : "") + ((defenseDetected === "undefined" || !(defenseDetected && defenseActive)) ? "" : " avec une defense active");
@@ -644,7 +644,7 @@ try {
                             if ((readData('SameGAL_AF', 'all') != "true" || (readData('SameGAL_AF', 'all') == "true" && galaxy == cur_planet_GAL))
                                 && (readData('WithoutFLEET_DEF_AF', 'all') != "true" || (readData('WithoutFLEET_DEF_AF', 'all') == "true" && flottesActive == false && defenseActive == false))
                                 && (readData('Seuil_Auto_ADD_AF', 'all') != "true" || (readData('Seuil_Auto_ADD_AF', 'all') == "true" && readData('Seuil_Auto_ADD_VAL_AF', 'all') <= (ressources / 2))))
-                                add_frigo({ 'nom': planame, 'galaxy': galaxy, 'system': system, 'position': planet, 'sondes': 1, 'flottes': flottes, 'defenses': defense, 'type': typeFrigo });
+                                add_frigo({ 'nom': planame, 'galaxy': galaxy, 'system': system, 'position': planet, 'sondes': nb_sonde_default, 'flottes': flottes, 'defenses': defense, 'type': typeFrigo });
                         }
                         if (infrig == 'no') {
                             var info = 'Je ne suis pas encore un de vos frigos !';
@@ -901,7 +901,7 @@ try {
                 //defense en cours
                 GLOB_persistedData["frigos"][cur_nb][10] = '0';
                 //Nb sonde
-                GLOB_persistedData["frigos"][cur_nb][11] = '1';
+                GLOB_persistedData["frigos"][cur_nb][11] = parseInt(readData("nb_sondes", "all"));
                 //Type frigo
                 GLOB_persistedData["frigos"][cur_nb][12] = $('#type' + messageID).val().replace(/__/g, '').replace(/'/g, '').replace(/"/g, '');
                 save_important_vars();
@@ -1288,7 +1288,7 @@ try {
             data: params,
             dataType: "json",
             type: "POST",
-            success: function (dateESP) {
+        }).done(function (dateESP) {
                 if (typeof (dateESP.newToken) !== "undefined") {
                     miniFleetToken = dateESP.newToken;
                 }
@@ -1312,12 +1312,6 @@ try {
                     setTimeout(function () { window.location.href = window.location.href.replace(gup('component'), 'overview').replace('&startAA=1', '').replace('&sephiScript=1', ''); }, 10000);
                     return;
                     //I2T- Simplifacation using regular expression
-                }
-                else if (!dateESP.response.message.match(/[E|e]rreur/)) {
-                    wait_sec = rand(2, 4);
-                    blit_message('Espionnage sur ' + GLOB_persistedData["frigos"][frigo_id_to_spy][0] + ' <span style="float: none;margin: 0;color:#109E18">démarré avec succès</span>(suivant dans ' + wait_sec + ' secondes).');
-                    $('#spy_isok_' + frigo_id_to_spy).css("display", 'block');
-                    GLOB_next_id = frigo_id_to_spy + 1;
                 }
                 else if (dateESP.response.message.match('planète')) {
                     blit_message('' + GLOB_persistedData["frigos"][frigo_id_to_spy][0] + ' <span style="float: none;margin: 0;color:#d43635">n\'existe plus</span>');
@@ -1362,6 +1356,18 @@ try {
                     setTimeout(function () { window.location.href = window.location.href.replace(gup('component'), 'overview').replace('&startAA=1', '').replace('&sephiScript=1', ''); }, 10000);
                     return;
                 }
+                else if (dateESP.response.message.includes('Nombre maximal de flottes atteint')) {
+                    blit_message('<span style="float: none;margin: 0;color:#d43635">Slots maximum utilisé</span> pour espionner ' + GLOB_persistedData["frigos"][frigo_id_to_spy][0] + '. Nouvel essai dans 3 secondes');
+                    clearTimeout(spyTimeout);
+                    setTimeout(launch_spy, 3000);
+                    return;
+                }
+                else if (!dateESP.response.message.match(/[E|e]rreur/)) {
+                    wait_sec = rand(2, 4);
+                    blit_message('Espionnage sur ' + GLOB_persistedData["frigos"][frigo_id_to_spy][0] + ' <span style="float: none;margin: 0;color:#109E18">démarré avec succès</span>(suivant dans ' + wait_sec + ' secondes).');
+                    $('#spy_isok_' + frigo_id_to_spy).css("display", 'block');
+                    GLOB_next_id = frigo_id_to_spy + 1;
+                }
                 else {
                     GLOB_next_id = frigo_id_to_spy;
                     //I2T- Increase de delay for waiting spy back
@@ -1404,8 +1410,7 @@ try {
                     }
                 }
                 clearTimeout(spyTimeout);
-            }
-        });
+            });
     }
     var inactif_id_to_spy;
     function autospy(self, override_id) {
@@ -1500,13 +1505,6 @@ try {
                     return;
                     //I2T- Simplifacation using regular expression
                 }
-                else if (!dateESP.response.message.match(/[E|e]rreur/)) {
-                    $('#autospy_notif').html('&#9658; Espionnage des frigos en cours...');
-                    wait_sec = rand(2, 4);
-                    blit_message('Espionnage sur ' + GLOB_TAB_INACTIF[inactif_id_to_spy]["name"] + ' <span style="float: none;margin: 0;color:#109E18">démarré avec succès</span>(suivant dans ' + wait_sec + ' secondes).');
-                    (GLOB_TAB_INACTIF[inactif_id_to_spy]["type"] == "1") ? $('#row' + GLOB_TAB_INACTIF[inactif_id_to_spy]["id"] + ' #planet_spy_check').css("display", 'block') : $('#row' + GLOB_TAB_INACTIF[inactif_id_to_spy]["id"] + ' #moon_spy_check').css("display", 'block');
-                    GLOB_next_id = inactif_id_to_spy + 1;
-                }
                 else if (dateESP.response.message.match('planète')) {
                     blit_message('' + GLOB_TAB_INACTIF[inactif_id_to_spy]["name"] + ' <span style="float: none;margin: 0;color:#d43635">n\'existe plus</span>');
                     GLOB_next_id = inactif_id_to_spy + 1;
@@ -1534,6 +1532,19 @@ try {
                     GLOB_abandonne_spy = true;
                     setTimeout(function () { window.location.href = window.location.href.replace(gup('component'), 'overview'); }, 10000);
                     return;
+                }
+                else if (dateESP.response.message.includes('Nombre maximal de flottes atteint')) {
+                    blit_message('<span style="float: none;margin: 0;color:#d43635">Slots maximum utilisé</span> pour espionner ' +GLOB_TAB_INACTIF[inactif_id_to_spy]["name"] + '. Nouvel essai dans 3 secondes');
+                    clearTimeout(spyTimeout);
+                    setTimeout(autospy, 3000);
+                    return;
+                }
+                else if (!dateESP.response.message.match(/[E|e]rreur/)) {
+                    $('#autospy_notif').html('&#9658; Espionnage des frigos en cours...');
+                    wait_sec = rand(2, 4);
+                    blit_message('Espionnage sur ' + GLOB_TAB_INACTIF[inactif_id_to_spy]["name"] + ' <span style="float: none;margin: 0;color:#109E18">démarré avec succès</span>(suivant dans ' + wait_sec + ' secondes).');
+                    (GLOB_TAB_INACTIF[inactif_id_to_spy]["type"] == "1") ? $('#row' + GLOB_TAB_INACTIF[inactif_id_to_spy]["id"] + ' #planet_spy_check').css("display", 'block') : $('#row' + GLOB_TAB_INACTIF[inactif_id_to_spy]["id"] + ' #moon_spy_check').css("display", 'block');
+                    GLOB_next_id = inactif_id_to_spy + 1;
                 }
                 else {
                     GLOB_next_id = inactif_id_to_spy;
@@ -3452,7 +3463,7 @@ try {
                 $('#autospy_data').html(prepare_spy_inactif(current_galaxy, system1, system2, tab_systems, tab_colonies_by_systems, scope, options));
                 $('#autospy_data #rescope').on("click", function () {
                     options = ($('#autospy_inactive').is(':checked') ? 'inactive' : 'noinactive') + '|' + ($('#autospy_active').is(':checked') ? 'active' : 'noactive') + '|' + ($('#autospy_planets').is(':checked') ? 'planets' : 'noplanets') + '|' + ($('#autospy_moons').is(':checked') ? 'moons' : 'nomoons');
-                    setTimeout(launch_autospy(parseInt($('#pageContent #galaxyHeader #galaxy_input').val()), parseInt($('#pageContent #galaxyHeader #system_input').val()), parseInt(parseInt(readData('nb_sondes', 'all')) | 5), parseInt($('#scope').val()), options), 2000);
+                    setTimeout(launch_autospy(parseInt($('#pageContent #galaxyHeader #galaxy_input').val()), parseInt($('#pageContent #galaxyHeader #system_input').val()), parseInt(parseInt(readData('nb_sondes', 'all')) || 5), parseInt($('#scope').val()), options), 2000);
                 });
                 $('#autospy_data #launch_autospy').on("click", function () {
                     var compteur = 0;
@@ -3479,7 +3490,7 @@ try {
         colonies_data = traitements_data_colonies(current_galaxy, players, playersDATA, options);
         scope = parseInt(scope || 100);
         var tab_systems, tab_colonies_by_systems;
-        _b = colonies_by_systems(colonies_data), tab_systems = _b[0], tab_colonies_by_systems = _b[1], _b;
+        _b = colonies_by_systems(colonies_data), tab_systems = _b[0], tab_colonies_by_systems = _b[1];
         var system1 = ((current_system - scope) <= 0) ? 1 : current_system - scope;
         var system2 = ((current_system + scope) >= 500) ? 499 : current_system + scope;
         espionne_inactif(nb_sondes, current_galaxy, system1, system2, tab_systems, tab_colonies_by_systems, scope, options);
@@ -5566,7 +5577,7 @@ try {
             }
             else {
                 $('#autospy').css("color", "darkred");
-                setTimeout(launch_autospy(parseInt($('#pageContent #galaxyHeader #galaxy_input').val()), parseInt($('#pageContent #galaxyHeader #system_input').val()), parseInt(readData("nb_sondes", "all") | 5), $('#scope').val(), 'inactive||planets|moons'), 2000);
+                setTimeout(launch_autospy(parseInt($('#pageContent #galaxyHeader #galaxy_input').val()), parseInt($('#pageContent #galaxyHeader #system_input').val()), parseInt(readData("nb_sondes", "all") || 5), $('#scope').val(), 'inactive||planets|moons'), 2000);
             }
         });
         setInterval(check_galaxy_frigs, 100);
