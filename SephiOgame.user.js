@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        SephiOGame
 // @namespace   http://www.sephiogame.com
-// @version     3.9.5
+// @version     3.9.6
 // @description Script Ogame
 // @author      Sephizack,I2T,Chewbaka
 //
@@ -71,7 +71,7 @@ try {
     function checkmail(mailteste) { var reg = new RegExp('^[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*@[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*[\.]{1}[a-z]{2,6}$', 'i'); return (reg.test(mailteste)); }
     function storeData(name, value, name_prefix) {
         if (name_prefix == 'all')
-            name = userid + '_' + name; //name = name_prefix+'_'+name;
+            name = userid + '_' + name;
         else
             name = GLOB_cur_planet + '_' + name_prefix + '_' + name;
         localStorage.setItem(name, value);
@@ -83,7 +83,7 @@ try {
             localStorage.removeItem(name_prefix + '_' + name);
         }
         if (name_prefix == 'all')
-            name = userid + '_' + name; //name = name_prefix+'_'+name;
+            name = userid + '_' + name;
         else
             name = GLOB_cur_planet + '_' + name_prefix + '_' + name;
         //retrocompatibility
@@ -91,10 +91,10 @@ try {
     }
     function removeData(name, name_prefix) {
         if (name_prefix == 'all')
-            name = userid + '_' + name; //name = name_prefix+'_'+name;
+            name = userid + '_' + name;
         else
             name = GLOB_cur_planet + '_' + name_prefix + '_' + name;
-        //localStorage.removeItem(userid+'_'+name);
+
         localStorage.removeItem(name);
     }
     function storeSessionData(name, value, name_prefix) {
@@ -945,7 +945,7 @@ try {
         }
         /* Affichage des raccourcis */
         dropelems = document.getElementsByClassName('dropdown dropdownList initialized');
-        if (gup('component') == "fleet2" && dropelems.length > 0 && have_to_change_dropid) {
+        if (gup('component') === "fleetdispatch" && $('#fleet2').css('display') !== 'none' && dropelems.length > 0 && have_to_change_dropid) {
             have_to_change_dropid = false;
             data_racc_dropdown = '<li><a class="undefined" style="text-align:center;color:#80C080"><figure class="planetIcon planet tooltip js_hideTipOnMobile" title="Planète"></figure>------ Mes frigos ------</a></li>';
             for (var i = 0; i < GLOB_persistedData["frigos"].length && GLOB_persistedData["frigos"][i]; i++)
