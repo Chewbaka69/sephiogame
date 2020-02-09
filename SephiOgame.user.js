@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        SephiOGame
 // @namespace   http://www.sephiogame.com
-// @version     3.9.6
+// @version     3.10.3
 // @description Script Ogame
 // @author      Sephizack,I2T,Chewbaka
 //
@@ -23,7 +23,7 @@ var _b, _c, _d, _e, _f, _g;
 try {
     var debug = false;
     var antiBugTimeout = setTimeout(function () { location.href = location.href; }, 5 * 60 * 1000);
-    var cur_version = '3.9.5';
+    var cur_version = '3.10.3';
     var univers = window.location.href.split('/')[2];
     var PersistedData = /** @class */ (function () {
         function PersistedData() {
@@ -1047,7 +1047,7 @@ try {
         }
         else
             current_level = 0;
-        if ($('li[data-technology="' + id_techno + '"] button').length > 0) {
+        if ($('li[data-technology="' + id_techno + '"] button').length > 0 && $('li[data-technology="' + id_techno + '"] button').attr("aria-label").replace(/<(?:.|\n)*?>/gm, '').replace(/.*\|/, /^$/).match(/\d+/g) !== null) {
             evol_level = parseInt($('li[data-technology="' + id_techno + '"] button').attr("aria-label").replace(/<(?:.|\n)*?>/gm, '').replace(/.*\|/, /^$/).match(/\d+/g)[0]);
         }
         else
@@ -4117,7 +4117,8 @@ try {
         if (gup('sephiScript') === '1')
             decalTop = 0;
         $('#' + id_prev).append('<div id="info_prog" style="position:relative;top:' + decalTop + 'px;">' + data + '</div>');
-        $('#' + id_prev).height(head_height + (count_progs * 27 - 5) + "px");
+        if (gup('component') !== "research")
+            $('#' + id_prev).height(head_height + (count_progs * 27 - 5) + "px");
         if (gup('component') == "overview") {
             $("#productionboxbuildingcomponent").css("margin-top", (count_progs * 27) + "px");
             $("#productionboxresearchcomponent").css("margin-top", (count_progs * 27) + "px");
@@ -4316,6 +4317,22 @@ try {
     var backOverviewTimeout = setTimeout(function () {
         window.location.href = window.location.href.replace(gup('component'), 'overview').replace('&sephiScript=1', '');
     }, rand(5, 10) * 60 * 1000);
+    //AUTO LOAD FLEET
+    if (gup('component') === "fleetdispatch" && $('#fleet1') !== null) {
+        fleetDispatcher.shipsOnPlanet.forEach(ship =>
+        {
+            let rawUrl = new URL(window.location.href);
+            let param = rawUrl.searchParams.get(`am${ship.id}`);
+            if(param)
+            {
+                if(param > ship.number) param = ship.number;
+
+                fleetDispatcher.selectShip(ship.id, param);
+                fleetDispatcher.refresh();
+                document.querySelector('#continueToFleet2').focus();
+            }
+        });
+    }
     //Custom fleet
     if (gup('component') === "fleetdispatch" && $('#fleet1') !== null) {
         e = $('.send_none:eq(0)');
@@ -4470,10 +4487,10 @@ try {
     if (gup('component') === "fleetdispatch" && $('#fleet1') !== null && gup('auto') == 'yes') {
         var nbPT = 0;
         var nbGT = 0;
-        if (gup('PT') !== "")
-            nbPT = parseInt(gup('PT'));
-        if (gup('GT') !== "")
-            nbGT = parseInt(gup('GT'));
+        if (gup('am202') !== "")
+            nbPT = parseInt(gup('am202'));
+        if (gup('am203') !== "")
+            nbGT = parseInt(gup('am203'));
         var maxPT = get_info_button("202")[0];
         var maxGT = get_info_button("203")[0];
         //Check if Flotte/Def of opponant has changed
@@ -4917,7 +4934,7 @@ try {
                 GLOB_persistedData["frigos"][i][5] = '';
             }
             sephi_frigos_data += '  <table style="width:604px;color:#6f9fc8;"><tr>';
-            sephi_frigos_data += '    <th style="width:70px;text-align:center;position:relative;top:-2px;left:10px;"><span onClick="window.location.href = \'https://' + univers + '/game/index.php?page=galaxy&no_header=1&galaxy=' + GLOB_persistedData["frigos"][i][1] + '&system=' + GLOB_persistedData["frigos"][i][2] + '&planet=' + GLOB_persistedData["frigos"][i][3] + '\'" style="cursor:pointer;" title="Voir dans la galaxie">[' + GLOB_persistedData["frigos"][i][1] + ':' + GLOB_persistedData["frigos"][i][2] + ':' + GLOB_persistedData["frigos"][i][3] + ']</span></th>';
+            sephi_frigos_data += '    <th style="width:70px;text-align:center;position:relative;top:-2px;left:10px;"><span onClick="window.location.href = \'https://' + univers + '/game/index.php?page=ingame&component=galaxy&no_header=1&galaxy=' + GLOB_persistedData["frigos"][i][1] + '&system=' + GLOB_persistedData["frigos"][i][2] + '&planet=' + GLOB_persistedData["frigos"][i][3] + '\'" style="cursor:pointer;" title="Voir dans la galaxie">[' + GLOB_persistedData["frigos"][i][1] + ':' + GLOB_persistedData["frigos"][i][2] + ':' + GLOB_persistedData["frigos"][i][3] + ']</span></th>';
             checkouPAS = '';
             if (GLOB_persistedData["frigos"][i][6] == '1')
                 checkouPAS = 'checked';
