@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        SephiOGame
 // @namespace   http://www.sephiogame.com
-// @version     3.10.3
+// @version     3.10.5
 // @description Script Ogame
 // @author      Sephizack,I2T,Chewbaka
 //
@@ -23,7 +23,7 @@ var _b, _c, _d, _e, _f, _g;
 try {
     var debug = false;
     var antiBugTimeout = setTimeout(function () { location.href = location.href; }, 5 * 60 * 1000);
-    var cur_version = '3.10.3';
+    var cur_version = '3.10.5';
     var univers = window.location.href.split('/')[2];
     var PersistedData = /** @class */ (function () {
         function PersistedData() {
@@ -443,11 +443,19 @@ try {
                 //I2T: Pour compatibilité AGO
                 //var ori_build_button = $("#content").find('a').last();
                 var hasPremiumButton = ($("#pageContent").find('a.build-it_premium').length == 1);
-                var ori_build_button = hasPremiumButton ? $("#pageContent").find('a.build-it_premium') : ($("#pageContent").find('.build-it_wrap button.upgrade').is(':disabled')) ? $("#pageContent").find('.build-it_wrap button.upgrade') : $("#pageContent").find('.build-it_wrap button.upgrade');
+                var ori_build_button = hasPremiumButton ? $("#pageContent").find('a.build-it_premium') : ($("#pageContent").find('.build-it_wrap button.upgrade').is(':disabled')) ? $("#pageContent").find('.build-it_wrap button.upgrade') : $("#pageContent").find('.build-it_wrap .upgrade');
                 !hasPremiumButton ? ori_build_button.css('position', 'absolute') : null; //'relative');
                 //ori_build_button.css('right', '5px');
                 var build_button = ori_build_button.clone();
                 (AGO_actif) ? ori_build_button.css('top', '-100px') : ori_build_button.css('top', '-45px'); //'-16px');//'-85px')
+                if(build_button.is('[data-title]')) {
+                    build_button.removeAttr('data-title');
+                    build_button.removeAttr('data-url');
+                    build_button.removeAttr('data-question');
+                    build_button.removeAttr('title');
+                    build_button.removeAttr('style');
+                    build_button.removeAttr('id');
+                }
                 build_button.attr('class', 'upgrade');
                 build_button.attr('href', '#');
                 build_button.attr('disabled', false);
@@ -456,8 +464,8 @@ try {
                     build_button.children()[0].innerHTML = LANG_programm;
                     build_button.children()[0].title = LANG_programm;
                 }
-                (AGO_actif) ? build_button.css('top', '-16px') : (hasPremiumButton ? build_button.css('top', '-55px') : build_button.css('top', '-100px')); //'-16px');//'-85px');
-                (hasPremiumButton ? build_button.css('height', '50px') : null);
+                (AGO_actif) ? build_button.css('top', '-16px') : (hasPremiumButton ? build_button.css('top', '-55px') : (ori_build_button.is(':disabled') ? build_button.css('top', '-110px') : build_button.css('top', '-60px')));
+                ori_build_button.is(':disabled') ? build_button.css('height', '53px') : build_button.css('height', '50px');
                 build_button.click(function (e) {
                     $(e.currentTarget).css('backgroundImage', 'url(http://www.sephiogame.com/script/sfdgdfshsdhg.png)');
                     $(e.currentTarget).prop('disabled', true);
