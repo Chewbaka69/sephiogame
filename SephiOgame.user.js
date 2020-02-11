@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        SephiOGame
 // @namespace   http://www.sephiogame.com
-// @version     3.10.5
+// @version     3.10.6
 // @description Script Ogame
 // @author      Sephizack,I2T,Chewbaka
 //
@@ -23,7 +23,7 @@ var _b, _c, _d, _e, _f, _g;
 try {
     var debug = false;
     var antiBugTimeout = setTimeout(function () { location.href = location.href; }, 5 * 60 * 1000);
-    var cur_version = '3.10.5';
+    var cur_version = '3.10.6';
     var univers = window.location.href.split('/')[2];
     var PersistedData = /** @class */ (function () {
         function PersistedData() {
@@ -464,8 +464,9 @@ try {
                     build_button.children()[0].innerHTML = LANG_programm;
                     build_button.children()[0].title = LANG_programm;
                 }
-                (AGO_actif) ? build_button.css('top', '-16px') : (hasPremiumButton ? build_button.css('top', '-55px') : (ori_build_button.is(':disabled') ? build_button.css('top', '-110px') : build_button.css('top', '-60px')));
-                ori_build_button.is(':disabled') ? build_button.css('height', '53px') : build_button.css('height', '50px');
+                (AGO_actif) ? build_button.css('top', '-16px') : (hasPremiumButton ? build_button.css('top', '-40px') : (ori_build_button.is(':disabled') ? build_button.css('top', '-100px') : (ori_build_button.is('[id="missingResource"]') ? build_button.css('top', '-55px') : build_button.css('top', '-100px'))));
+                (ori_build_button.is(':disabled') || (!ori_build_button.is('[id="missingResource"]') && !hasPremiumButton)) ? build_button.css('height', '53px') : build_button.css('height', '50px');
+                ori_build_button.is('[id="missingResource"]') ? build_button.css('right', '0px') : null;
                 build_button.click(function (e) {
                     $(e.currentTarget).css('backgroundImage', 'url(http://www.sephiogame.com/script/sfdgdfshsdhg.png)');
                     $(e.currentTarget).prop('disabled', true);
