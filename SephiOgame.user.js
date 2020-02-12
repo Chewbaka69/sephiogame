@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        SephiOGame
 // @namespace   http://www.sephiogame.com
-// @version     3.10.6
+// @version     3.10.7
 // @description Script Ogame
 // @author      Sephizack,I2T,Chewbaka
 //
@@ -23,7 +23,7 @@ var _b, _c, _d, _e, _f, _g;
 try {
     var debug = false;
     var antiBugTimeout = setTimeout(function () { location.href = location.href; }, 5 * 60 * 1000);
-    var cur_version = '3.10.6';
+    var cur_version = '3.10.7';
     var univers = window.location.href.split('/')[2];
     var PersistedData = /** @class */ (function () {
         function PersistedData() {
@@ -443,7 +443,7 @@ try {
                 //I2T: Pour compatibilité AGO
                 //var ori_build_button = $("#content").find('a').last();
                 var hasPremiumButton = ($("#pageContent").find('a.build-it_premium').length == 1);
-                var ori_build_button = hasPremiumButton ? $("#pageContent").find('a.build-it_premium') : ($("#pageContent").find('.build-it_wrap button.upgrade').is(':disabled')) ? $("#pageContent").find('.build-it_wrap button.upgrade') : $("#pageContent").find('.build-it_wrap .upgrade');
+                var ori_build_button = hasPremiumButton ? $("#pageContent").find('.build-it_premium') : ($("#pageContent").find('.build-it_wrap button.upgrade').is(':disabled')) ? $("#pageContent").find('.build-it_wrap button.upgrade') : $("#pageContent").find('.build-it_wrap .upgrade');
                 !hasPremiumButton ? ori_build_button.css('position', 'absolute') : null; //'relative');
                 //ori_build_button.css('right', '5px');
                 var build_button = ori_build_button.clone();
@@ -2617,7 +2617,7 @@ try {
                 dataType: "text",
                 async: true,
                 success: function (html) {
-                    var slot_infos = $(html).find('#slots .tooltip').html().match(/ (\d+)\/(\d+)/);
+                    var slot_infos = $(html).find('#slots .tooltip').html().match(/(\d+)\/(\d+)/);
                     if (readData('used_slot', 'all') != slot_infos[1])
                         storeData('used_slot', slot_infos[1], 'all');
                     if (readData('full_slot', 'all') != slot_infos[2])
