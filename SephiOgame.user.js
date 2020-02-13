@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        SephiOGame
 // @namespace   http://www.sephiogame.com
-// @version     3.10.10
+// @version     3.10.11
 // @description Script Ogame
 // @author      Sephizack,I2T,Chewbaka
 //
@@ -23,7 +23,7 @@ var _b, _c, _d, _e, _f, _g;
 try {
     var debug = false;
     var antiBugTimeout = setTimeout(function () { location.href = location.href; }, 5 * 60 * 1000);
-    var cur_version = '3.10.10';
+    var cur_version = '3.10.11';
     var univers = window.location.href.split('/')[2];
     var PersistedData = /** @class */ (function () {
         function PersistedData() {
@@ -448,6 +448,7 @@ try {
                 //ori_build_button.css('right', '5px');
                 var build_button = ori_build_button.clone();
                 (AGO_actif) ? ori_build_button.css('top', '-100px') : ori_build_button.css('top', '-45px'); //'-16px');//'-85px')
+                hasPremiumButton ? build_button.css('z-index', 10) : null;
                 if(build_button.is('[data-title]')) {
                     build_button.removeAttr('data-title');
                     build_button.removeAttr('data-url');
