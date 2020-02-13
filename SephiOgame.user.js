@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        SephiOGame
 // @namespace   http://www.sephiogame.com
-// @version     3.10.7
+// @version     3.10.9
 // @description Script Ogame
 // @author      Sephizack,I2T,Chewbaka
 //
@@ -23,7 +23,7 @@ var _b, _c, _d, _e, _f, _g;
 try {
     var debug = false;
     var antiBugTimeout = setTimeout(function () { location.href = location.href; }, 5 * 60 * 1000);
-    var cur_version = '3.10.7';
+    var cur_version = '3.10.9';
     var univers = window.location.href.split('/')[2];
     var PersistedData = /** @class */ (function () {
         function PersistedData() {
@@ -3951,6 +3951,8 @@ try {
         id_prev = "supplies";
     if (gup('component') == "facilities")
         id_prev = "facilities";
+    if (gup('component') == "shipyard")
+        id_prev = "shipyard";
     var data = '';
     data += '<div style="height:0px;"><div id="support_prev_block" style="height:;width:660px;background:#0D1014;position:relative;left:-5px;"></div></div>';
     add_auto_attack_bar();
@@ -4117,10 +4119,10 @@ try {
         }
         if (gup('page') === 'resourceSettings')
             decalTop = 10;
-        if (gup('component') === 'supplies')
+        if (gup('component') === 'supplies' || gup('component') === 'facilities')
             decalTop = 0;
-        if (gup('component') === 'facilities')
-            decalTop = 0;
+        if (gup('component') === 'shipyard')
+            decalTop = 0; head_height = 560;
         if (gup('component') === 'research' || gup('component') === 'defenses')
             decalTop = 510;
         if (gup('sephiScript') === '1')
