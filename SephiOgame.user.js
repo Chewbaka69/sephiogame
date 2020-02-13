@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        SephiOGame
 // @namespace   http://www.sephiogame.com
-// @version     3.10.9
+// @version     3.10.10
 // @description Script Ogame
 // @author      Sephizack,I2T,Chewbaka
 //
@@ -23,7 +23,7 @@ var _b, _c, _d, _e, _f, _g;
 try {
     var debug = false;
     var antiBugTimeout = setTimeout(function () { location.href = location.href; }, 5 * 60 * 1000);
-    var cur_version = '3.10.9';
+    var cur_version = '3.10.10';
     var univers = window.location.href.split('/')[2];
     var PersistedData = /** @class */ (function () {
         function PersistedData() {
@@ -38,7 +38,7 @@ try {
     var LANG_done = isFR ? "Terminé" : "Done";
     var LANG_noLocalStorage = isFR ? "Votre navigateur ne supporte pas le système de localStorage, mettez le à jour ou désinstallez le script."
         : "Your browser does not support localStorage feature, please update to latest Chrome version or unistall SephiOGame.";
-    var LANG_nouveaute_update = ' - Fix auto spy Galaxy slots<br/> - Fix auto spy fridge slots<br/> - Fix nb sondes send to spy';
+    var LANG_nouveaute_update = ' - Fix premium button break programmation number';
     //get userid
     var userid = ($('head').find('meta[name="ogame-player-id"]') != null && $('head').find('meta[name="ogame-player-id"]').length > 0) ? $('head').find('meta[name="ogame-player-id"]').attr("content") : tabID;
     //get allianceid
@@ -442,7 +442,7 @@ try {
                 // Program button
                 //I2T: Pour compatibilité AGO
                 //var ori_build_button = $("#content").find('a').last();
-                var hasPremiumButton = ($("#pageContent").find('a.build-it_premium').length == 1);
+                var hasPremiumButton = ($("#pageContent").find('.build-it_premium').length == 1);
                 var ori_build_button = hasPremiumButton ? $("#pageContent").find('.build-it_premium') : ($("#pageContent").find('.build-it_wrap button.upgrade').is(':disabled')) ? $("#pageContent").find('.build-it_wrap button.upgrade') : $("#pageContent").find('.build-it_wrap .upgrade');
                 !hasPremiumButton ? ori_build_button.css('position', 'absolute') : null; //'relative');
                 //ori_build_button.css('right', '5px');
